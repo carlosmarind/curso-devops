@@ -26,5 +26,11 @@ pipeline {
                 sh "npm run build"
             }
         }
+        stage("CI de la aplicacion - build dockerfile"){
+            steps{
+                sh "docker build -t curso-devops ."
+            }
+        }
+        
     }
 }
