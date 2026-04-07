@@ -38,7 +38,7 @@ pipeline {
 
                 script{
                     def semantic = sh(
-                        script: 'npm pkg get version| tr -d \'"\''
+                        script: 'npm pkg get version| tr -d \'"\'',
                         returnStdout:true
                     ).trim()
                     docker.withRegistry("https://index.docker.io/v1/","credencial-dh"){
