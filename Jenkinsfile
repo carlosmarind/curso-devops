@@ -37,7 +37,7 @@ pipeline {
 
 
                 script{
-                    var semantic = sh(
+                    def semantic = sh(
                         script: 'npm pkg get version| tr -d \'"\''
                         returnStdout:true
                     ).trim()
