@@ -34,6 +34,12 @@ pipeline {
         stage("CI de la aplicacion - build dockerfile"){
             steps{
                 sh "docker build -t curso-devops ."
+                
+                sh 'docker tag curso-devops carlosmarind/curso-devops:latest'
+                sh 'docker push carlosmarind/curso-devops:latest'
+
+                sh 'docker tag curso-devops ghcr.io/carlosmarind/curso-devops:latest'
+                sh 'docker push ghcr.io/carlosmarind/curso-devops:latest'
             }
         }
     }
