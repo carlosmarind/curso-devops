@@ -6,11 +6,24 @@ pipeline {
             }
     }
     stages {
-        stage("CI de la aplicacion"){
+        stage("CI de la aplicacion - dependencias"){
             steps{
                 sh "npm install"
-                sh "ls -l"
-                sh "hostname"
+            }
+        }
+        stage("CI de la aplicacion - lint"){
+            steps{
+                sh "npm run build"
+            }
+        }
+        stage("CI de la aplicacion - test"){
+            steps{
+                sh "npm run build"
+            }
+        }
+        stage("CI de la aplicacion - build"){
+            steps{
+                sh "npm run build"
             }
         }
     }
