@@ -1,0 +1,12 @@
+node_modules
+.git
+test
+*.md
+eslint.config.mjs
+tsconfig*.json
+nest-cli.json
+Jenkinsfile
+Dockerfile*
+.env*
+compose-example
+.prettierrc
