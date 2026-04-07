@@ -37,12 +37,16 @@ pipeline {
                 script{
                     docker.withRegistry("https://index.docker.io/v1/","credencial-dh"){
                         sh 'docker tag curso-devops carlosmarind/curso-devops:latest'
+                        sh 'docker tag curso-devops carlosmarind/curso-devops:${env.BUILD_NUMBER}'
                         sh 'docker push carlosmarind/curso-devops:latest'
+                        sh 'docker push carlosmarind/curso-devops:${env.BUILD_NUMBER}'
                     }
 
                     docker.withRegistry("https://ghcr.io","credencial-gh"){
                         sh 'docker tag curso-devops ghcr.io/carlosmarind/curso-devops:latest'
+                        sh 'docker tag curso-devops ghcr.io/carlosmarind/curso-devops:${env.BUILD_NUMBER}'
                         sh 'docker push ghcr.io/carlosmarind/curso-devops:latest'
+                        sh 'docker push ghcr.io/carlosmarind/curso-devops:${env.BUILD_NUMBER}'
                     }
                 }
             }
