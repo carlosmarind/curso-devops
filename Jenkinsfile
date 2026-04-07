@@ -34,19 +34,29 @@ pipeline {
         stage("CI de la aplicacion - build dockerfile"){
             steps{
                 sh "docker build -t curso-devops ."
+
+
                 script{
+                    var semantic = sh(
+                        script: 'npm pkg get version| tr -d \'"\''
+                        returnStdout:true
+                    ).trim()
                     docker.withRegistry("https://index.docker.io/v1/","credencial-dh"){
                         sh 'docker tag curso-devops carlosmarind/curso-devops:latest'
                         sh "docker tag curso-devops carlosmarind/curso-devops:${env.BUILD_NUMBER}"
+                        sh "docker tag curso-devops carlosmarind/curso-devops:${semantic}"
                         sh 'docker push carlosmarind/curso-devops:latest'
                         sh "docker push carlosmarind/curso-devops:${env.BUILD_NUMBER}"
+                        sh "docker push carlosmarind/curso-devops:${semantic}"
                     }
 
                     docker.withRegistry("https://ghcr.io","credencial-gh"){
                         sh 'docker tag curso-devops ghcr.io/carlosmarind/curso-devops:latest'
                         sh "docker tag curso-devops ghcr.io/carlosmarind/curso-devops:${env.BUILD_NUMBER}"
+                        sh "docker tag curso-devops ghcr.io/carlosmarind/curso-devops:${semantic}"
                         sh 'docker push ghcr.io/carlosmarind/curso-devops:latest'
                         sh "docker push ghcr.io/carlosmarind/curso-devops:${env.BUILD_NUMBER}"
+                        sh "docker push ghcr.io/carlosmarind/curso-devops:${semantic}"
                     }
                 }
             }
