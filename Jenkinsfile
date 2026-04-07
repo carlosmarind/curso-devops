@@ -13,12 +13,12 @@ pipeline {
         }
         stage("CI de la aplicacion - lint"){
             steps{
-                sh "npm run build"
+                sh "npm run lint"
             }
         }
         stage("CI de la aplicacion - test"){
             steps{
-                sh "npm run build"
+                sh "npm run test"
             }
         }
         stage("CI de la aplicacion - build"){
