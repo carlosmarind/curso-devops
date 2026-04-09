@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { INestApplication } from '@nestjs/common';
+import { App } from 'supertest/types';
+import { AppModule } from './app.module';
+import request from 'supertest';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -14,9 +18,39 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('Probando controller', () => {
+    it('Probando getHello"', () => {
+      expect(appController.getHello()).not.toBe('Hola Mundo!');
     });
+    it('Probando getHi"', () => {
+      expect(appController.getHi()).toBeDefined();
+    });
+  });
+});
+
+describe('AppController (Via Rest)', () => {
+  let app: INestApplication<App>;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  it('/GET', () => {
+    return request(app.getHttpServer())
+      .get('/hi')
+      .expect(200)
+      .expect('Hi there!!!');
+  });
+
+  it('/GET', () => {
+    return request(app.getHttpServer())
+      .get('/saludo')
+      .expect(200)
+      .expect('Hello World!');
   });
 });
