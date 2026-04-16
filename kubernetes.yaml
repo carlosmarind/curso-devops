@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: curso
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: curso-devops-config
+  namespace: curso
+data:
+  USERNAME: "cmd"
+  ENDPOINT: "http://api.google.com/v1"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: curso-devops-secret
+  namespace: curso
+type: Opaque
+stringData:
+  APIKEY: "123456789abcde"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: curso-devops-deployment
+  namespace: curso
+  labels:
+    app: curso-devops-stack
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: curso-devops-stack
+  template:
+    metadata:
+      labels:
+        app: curso-devops-stack
+    spec:
+      containers:
+      - name: contenedor-curso-devops
+        image: carlosmarind/curso-devops
+        imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: development
+        - name: PORT
+          value: "3000"
+        - name: USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: curso-devops-config
+              key: USERNAME
+              optional: true
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: curso-devops-secret
+              key: APIKEY
+              optional: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: curso-devops-service
+  namespace: curso
+  labels:
+    app: curso-devops-stack
+spec:
+  selector:
+     app: curso-devops-stack
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: curso-devops-ingress
+  namespace: curso
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: app.devops.cl
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: curso-devops-service
+            port:
+              number: 80

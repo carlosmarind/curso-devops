@@ -23,6 +23,12 @@ pipeline {
         IMAGE_NAME = "curso-devops"
         DH_REPO    = "carlosmarind/curso-devops"
         GHCR_REPO  = "ghcr.io/carlosmarind/curso-devops"
+        K8S_NAMESPACE  = "curso"
+        K8S_DEPLOYMENT = "curso-devops-deployment"
+        K8S_CONTAINER  = "contenedor-curso-devops"
+
+
+
     }
     stages {
         stage("Integracion continua") {
@@ -94,7 +100,7 @@ pipeline {
                 }
             }
         }
-        stage("CI de la aplicacion - build dockerfile") {
+        stage("CD de la aplicacion - build dockerfile") {
             steps {
                 sh "docker build -t ${env.IMAGE_NAME} ."
                 script {
@@ -106,6 +112,22 @@ pipeline {
                     tagAndPush(env.IMAGE_NAME, env.DH_REPO, "https://index.docker.io/v1/", "credencial-dh")
                     tagAndPush(env.IMAGE_NAME, env.GHCR_REPO, "https://ghcr.io", "credencial-gh")
                 }
+            }
+        }
+        stage("CD - Despliegue continuo en develop"){
+            agent {
+                docker {
+                    image 'alpine/k8s:1.34.6'
+                    reuseNode true
+                }
+            }
+            steps{
+                script {
+                    if (!env.APP_SEMANTIC_VERSION?.trim()) {
+                        error("APP_SEMANTIC_VERSION no definida para el despliegue")
+                    }
+                }
+                sh "kubectl -n ${env.K8S_NAMESPACE} set image deployment/${env.K8S_DEPLOYMENT} ${env.K8S_CONTAINER}=${env.DH_REPO}:${env.APP_SEMANTIC_VERSION}"
             }
         }
     }
