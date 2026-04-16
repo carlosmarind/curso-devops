@@ -127,7 +127,9 @@ pipeline {
                         error("APP_SEMANTIC_VERSION no definida para el despliegue")
                     }
                 }
-                sh "kubectl -n ${env.K8S_NAMESPACE} set image deployment/${env.K8S_DEPLOYMENT} ${env.K8S_CONTAINER}=${env.DH_REPO}:${env.APP_SEMANTIC_VERSION}"
+                withKubeConfig([credentialsId: 'credencial-k8']) {
+                    sh "kubectl -n ${env.K8S_NAMESPACE} set image deployment/${env.K8S_DEPLOYMENT} ${env.K8S_CONTAINER}=${env.DH_REPO}:${env.APP_SEMANTIC_VERSION}"
+                }
             }
         }
     }
